@@ -28,10 +28,14 @@ export default {
       score: 0,
       gameOver: false,
       scoreText: undefined,
-      scene: undefined
+      scene: undefined,
+      pl_login: false
     };
   },
   methods: {
+   // stopScene() {
+   //   this.scene.pause()
+   // },
     bombKill(bullets, bombs) {
       bombs.disableBody(true, true);
       console.log(bullets);
@@ -188,6 +192,10 @@ export default {
           this.load.image(
             "grass",
             "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass_img.png"
+          );
+          this.load.image(
+            "fone",
+            "https://raw.githubusercontent.com/kazakovichna/web-game/master/MAZASHiB%20LOGO.png"
           );
         },
         create: function() {
@@ -456,6 +464,10 @@ export default {
           );
         },
         update: function() {
+          if (!this.game.vueinst.pl_login) {
+            this.add.image(512, 288, "fone");
+          }
+
           if (this.game.vueinst.moveKeys["left_A"].isDown) {
             this.game.vueinst.player.setVelocityX(-160);
             this.game.vueinst.flip = true;
@@ -479,7 +491,6 @@ export default {
         }
       }
     });
-    this.game.vueinst = this;
   }
 };
 </script>
