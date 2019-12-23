@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "core-js": "^3.4.3",
+    "firebase": "^7.6.1",
+    "firebaseui": "^4.4.0",
+    "phaser": "^3.21.0",
     "vue": "^2.6.10"
   },
   "devDependencies": {
