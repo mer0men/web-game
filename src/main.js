@@ -1,5 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
+import store from "./store";
 import * as firebase from "firebase";
 import * as firebaseui from "firebaseui";
 
@@ -18,19 +19,15 @@ const configOptions = {
   measurementId: "G-Y1KFPE5E0K"
 };
 
+firebase.initializeApp(configOptions);
+
 new Vue({
   render: h => h(App),
-  created() {
-    firebase.initializeApp(configOptions);
-    firebase.auth().onAuthStateChanged(user => {
-      console.log("state changed", user);
-    });
-  },
   data() {
     return {
-      userId: {},
       firebase: firebase,
       firebaseui: firebaseui
     };
-  }
+  },
+  store
 }).$mount("#app");

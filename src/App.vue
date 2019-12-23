@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <canvas id="game"></canvas>
-    <div id="firebaseui-auth-container"></div>
+    <div v-show="!user" id="firebaseui-auth-container"></div>
+    <div v-show="user" class="logout">
+      <input type="button" value="logut" @click="logout" />
+    </div>
   </div>
 </template>
 
@@ -29,13 +32,18 @@ export default {
       gameOver: false,
       scoreText: undefined,
       scene: undefined,
-      pl_login: false
+      isPaused: false
     };
   },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
   methods: {
-   // stopScene() {
-   //   this.scene.pause()
-   // },
+    logout() {
+      this.$root.firebase.auth().signOut();
+    },
     bombKill(bullets, bombs) {
       bombs.disableBody(true, true);
       console.log(bullets);
@@ -117,12 +125,323 @@ export default {
 
       this.gameOver = true;
       console.log(bomb);
+    },
+    loadImgs(scene) {
+      scene.load.image(
+        "background",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/wasteland.png"
+      );
+      scene.load.image(
+        "big_ground",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_big_grass.png"
+      );
+      scene.load.image(
+        "ground",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass.png"
+      );
+      scene.load.image(
+        "star",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/star.png"
+      );
+      scene.load.image(
+        "bomb",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/bomb.png"
+      );
+      scene.load.image(
+        "enemy_1",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/enemy_1.png"
+      );
+      scene.load.image(
+        "fireball",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/fireball.png"
+      );
+      scene.load.spritesheet(
+        "dude",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/dude.png",
+        {
+          frameWidth: 32,
+          frameHeight: 48
+        }
+      );
+      //   scene.game.load.spritesheet('keel', 'assets/boom_frame.png', {frameWidth: 16, frameHeight: 16 });
+      scene.load.image(
+        "grass",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass_img.png"
+      );
+      scene.load.image(
+        "fone",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/MAZASHiB%20LOGO.png"
+      );
+    },
+    generationMap(scene) {
+      scene.game.vueinst.bullets = scene.physics.add.group();
+      scene.game.vueinst.en_bullets = scene.physics.add.group();
+      // устанавливаем тип бомб //////////////////////////////////////////////////////////////////////////////////////
+      scene.game.vueinst.bombs = scene.physics.add.group();
+      // здесь мы создаем карту //////////////////////////////////////////////////////////////////////////////////
+      scene.add.image(512, 288, "background");
+
+      scene.game.vueinst.platforms = scene.physics.add.staticGroup();
+      scene.game.vueinst.grass = scene.physics.add.staticGroup();
+
+      scene.game.vueinst.platforms
+        .create(512, 570, "big_ground")
+        .setScale(1)
+        .refreshBody();
+
+      // platforms.create(50, 140, 'ground');
+
+      //нижняя стена ////////////////////////////////////////////////////////////////////////////////////////////////
+      scene.game.vueinst.platforms.create(150, 540, "ground");
+      scene.game.vueinst.grass.create(150, 537, "grass");
+      scene.game.vueinst.platforms.create(150, 520, "ground");
+      scene.game.vueinst.grass.create(150, 517, "grass");
+      // rocks at first flour //////
+      scene.game.vueinst.platforms.create(450, 540, "ground");
+      scene.game.vueinst.grass.create(450, 537, "grass");
+
+      // первая ступенька // первая половина экрана /////////////////////////////////////////////////////////////////
+      scene.game.vueinst.platforms.create(50, 430, "ground");
+      scene.game.vueinst.grass.create(50, 427, "grass");
+      // second stairs
+      scene.game.vueinst.platforms.create(250, 345, "ground");
+      scene.game.vueinst.grass.create(250, 342, "grass");
+      // there are first flour
+      scene.game.vueinst.platforms.create(370, 345, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(490, 345, "ground");
+      scene.game.vueinst.grass.create(490, 342, "grass");
+      scene.game.vueinst.platforms.create(610, 345, "ground");
+      scene.game.vueinst.grass.create(610, 342, "grass");
+      scene.game.vueinst.platforms.create(730, 345, "ground");
+      scene.game.vueinst.grass.create(730, 342, "grass");
+      scene.game.vueinst.platforms.create(760, 345, "ground");
+      scene.game.vueinst.grass.create(760, 342, "grass");
+      scene.game.vueinst.platforms.create(230, 315, "ground");
+      scene.game.vueinst.grass.create(230, 342, "grass");
+      scene.game.vueinst.platforms.create(210, 285, "ground");
+      scene.game.vueinst.grass.create(210, 282, "grass");
+      // third stairs
+      scene.game.vueinst.platforms.create(50, 270, "ground");
+      scene.game.vueinst.grass.create(50, 267, "grass");
+      // fourth stairs
+      scene.game.vueinst.platforms.create(250, 200, "ground");
+      scene.game.vueinst.grass.create(250, 197, "grass");
+      // there are second flour
+      scene.game.vueinst.platforms.create(370, 200, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(490, 200, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(610, 200, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(730, 200, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(760, 200, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(920, 160, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      scene.game.vueinst.platforms.create(890, 190, "ground");
+      scene.game.vueinst.grass.create(370, 342, "grass");
+      // mid per last flour
+      scene.game.vueinst.platforms.create(10, 130, "ground");
+      scene.game.vueinst.grass.create(10, 127, "grass");
+      scene.game.vueinst.platforms.create(130, 130, "ground");
+      scene.game.vueinst.grass.create(130, 127, "grass");
+      scene.game.vueinst.platforms.create(250, 130, "ground");
+      scene.game.vueinst.grass.create(250, 127, "grass");
+      scene.game.vueinst.platforms.create(370, 130, "ground");
+      scene.game.vueinst.grass.create(370, 127, "grass");
+      scene.game.vueinst.platforms.create(490, 130, "ground");
+      scene.game.vueinst.grass.create(490, 127, "grass");
+      scene.game.vueinst.platforms.create(610, 130, "ground");
+      scene.game.vueinst.grass.create(610, 127, "grass");
+      // platforms.create(730, 130, 'ground');
+      scene.game.vueinst.platforms.create(730, 130, "ground");
+      scene.game.vueinst.grass.create(730, 127, "grass");
+      //last stair
+      //  platforms.create(50, 140, 'ground');
+      //there are third big flour
+      scene.game.vueinst.platforms.create(250, 60, "ground");
+      scene.game.vueinst.grass.create(250, 57, "grass");
+      scene.game.vueinst.platforms.create(370, 60, "ground");
+      scene.game.vueinst.grass.create(370, 57, "grass");
+      scene.game.vueinst.platforms.create(490, 60, "ground");
+      scene.game.vueinst.grass.create(490, 57, "grass");
+      scene.game.vueinst.platforms.create(610, 60, "ground");
+      scene.game.vueinst.grass.create(610, 57, "grass");
+      scene.game.vueinst.platforms.create(730, 60, "ground");
+      scene.game.vueinst.grass.create(730, 57, "grass");
+      // platforms.create(730, 30, 'ground');
+      // second part of screen
+      scene.game.vueinst.platforms.create(750, 520, "ground");
+      scene.game.vueinst.grass.create(750, 517, "grass");
+      scene.game.vueinst.platforms.create(960, 115, "ground");
+      scene.game.vueinst.grass.create(960, 112, "grass");
+      scene.game.vueinst.platforms.create(960, 265, "ground");
+      scene.game.vueinst.grass.create(960, 262, "grass");
+      scene.game.vueinst.platforms.create(960, 430, "ground");
+      scene.game.vueinst.grass.create(960, 427, "grass");
+
+      // create the enemies /////////////////////////////////////////////////////////////////////////////////////////
+      scene.game.vueinst.enemies = scene.physics.add.group();
+
+      var enemy_1 = scene.game.vueinst.enemies.create(100, 170, "enemy_1");
+
+      enemy_1.setCollideWorldBounds(true);
+      enemy_1.setBounce(1);
+      enemy_1.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+      //здесь мы прописываем движение игрока и анимацию этого движения ///////////////////////////////////////////////
+
+      scene.game.vueinst.player = scene.physics.add.sprite(10, 530, "dude");
+
+      scene.game.vueinst.player.setBounce(0.2);
+      scene.game.vueinst.player.setCollideWorldBounds(true);
+
+      scene.game.vueinst.moveKeys = scene.input.keyboard.addKeys({
+        left_A: Phaser.Input.Keyboard.KeyCodes.A,
+        right_D: Phaser.Input.Keyboard.KeyCodes.D
+      });
+
+      // тут будет вся анимация //////////////////////////////////////////////////////////////////////////////////////
+
+      scene.anims.create({
+        key: "fly",
+        frames: [{ key: "keel", frame: 0 }],
+        frameRate: 20
+      });
+
+      scene.anims.create({
+        key: "kek",
+        frames: scene.anims.generateFrameNumbers("keel", {
+          start: 1,
+          end: 4
+        }),
+        frameRate: 20
+      });
+      scene.anims.create({
+        key: "left",
+        frames: scene.anims.generateFrameNumbers("dude", {
+          start: 0,
+          end: 3
+        }),
+        frameRate: 10,
+        repeat: -1
+      });
+
+      scene.anims.create({
+        key: "turn",
+        frames: [{ key: "dude", frame: 4 }],
+        frameRate: 20
+      });
+
+      scene.anims.create({
+        key: "right",
+        frames: scene.anims.generateFrameNumbers("dude", {
+          start: 5,
+          end: 8
+        }),
+        frameRate: 10,
+        repeat: -1
+      });
+
+      scene.game.vueinst.cursors = scene.input.keyboard.createCursorKeys();
+
+      // добавляем звезды /////////////////////////////////////////////////////////////////////////////////////////////
+      scene.game.vueinst.stars = scene.physics.add.group({
+        key: "star",
+        repeat: 11,
+        setXY: { x: 12, y: 0, stepX: 70 }
+      });
+
+      scene.game.vueinst.stars.children.iterate(function(child) {
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+      });
+
+      scene.game.vueinst.scoreText = scene.add.text(16, 16, "score: 0", {
+        fontSize: "32px",
+        fill: "#000"
+      });
+    },
+    createColaiders(scene) {
+      scene.physics.add.collider(
+        scene.game.vueinst.player,
+        scene.game.vueinst.platforms
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.stars,
+        scene.game.vueinst.platforms
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.bombs,
+        scene.game.vueinst.platforms
+      );
+
+      scene.physics.add.collider(
+        scene.game.vueinst.enemies,
+        scene.game.vueinst.platforms,
+        scene.game.vueinst.enemyshoot,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.player,
+        scene.game.vueinst.en_bullets,
+        scene.game.vueinst.hitBomb,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.en_bullets,
+        scene.game.vueinst.platforms,
+        scene.game.vueinst.en_boom,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.bullets,
+        scene.game.vueinst.enemies,
+        scene.game.vueinst.enemyKill,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.bullets,
+        scene.game.vueinst.platforms,
+        scene.game.vueinst.boom,
+        null,
+        scene
+      );
+      scene.physics.add.overlap(
+        scene.game.vueinst.player,
+        scene.game.vueinst.stars,
+        scene.game.vueinst.collectStar,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.player,
+        scene.game.vueinst.bombs,
+        scene.game.vueinst.hitBomb,
+        null,
+        scene
+      );
+      scene.physics.add.collider(
+        scene.game.vueinst.bullets,
+        scene.game.vueinst.bombs,
+        scene.game.vueinst.bombKill,
+        null,
+        scene
+      );
     }
   },
   mounted() {
-    console.log("User", this.$root.user);
+    // console.log("User", this.$root.user);
     // console.log(this.$root.firebaseui);
     // console.log(this.$root.firebase);
+    this.$root.firebase.auth().onAuthStateChanged(user => {
+      this.$store.commit("SET_USER", user);
+    });
     let ui = new this.$root.firebaseui.auth.AuthUI(this.$root.firebase.auth());
     let uiConfig = {
       callbacks: {
@@ -152,320 +471,29 @@ export default {
       scene: {
         preload: function() {
           this.game.vueinst.scene = this;
-          this.load.image(
-            "background",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/wasteland.png"
-          );
-          this.load.image(
-            "big_ground",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_big_grass.png"
-          );
-          this.load.image(
-            "ground",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass.png"
-          );
-          this.load.image(
-            "star",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/star.png"
-          );
-          this.load.image(
-            "bomb",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/bomb.png"
-          );
-          this.load.image(
-            "enemy_1",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/enemy_1.png"
-          );
-          this.load.image(
-            "fireball",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/fireball.png"
-          );
-          this.load.spritesheet(
-            "dude",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/dude.png",
-            {
-              frameWidth: 32,
-              frameHeight: 48
-            }
-          );
-          //   this.game.load.spritesheet('keel', 'assets/boom_frame.png', {frameWidth: 16, frameHeight: 16 });
-          this.load.image(
-            "grass",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass_img.png"
-          );
-          this.load.image(
-            "fone",
-            "https://raw.githubusercontent.com/kazakovichna/web-game/master/MAZASHiB%20LOGO.png"
-          );
+          this.game.vueinst.loadImgs(this);
         },
         create: function() {
           this.input.keyboard.on("keyup-W", () => console.log("W pressed"));
           this.input.keyboard.on("keydown-W", this.game.vueinst.fire, this);
 
-          this.game.vueinst.bullets = this.physics.add.group();
-          this.game.vueinst.en_bullets = this.physics.add.group();
-          // устанавливаем тип бомб //////////////////////////////////////////////////////////////////////////////////////
-          this.game.vueinst.bombs = this.physics.add.group();
-          // здесь мы создаем карту //////////////////////////////////////////////////////////////////////////////////
-          this.add.image(512, 288, "background");
-
-          this.game.vueinst.platforms = this.physics.add.staticGroup();
-          this.game.vueinst.grass = this.physics.add.staticGroup();
-
-          this.game.vueinst.platforms
-            .create(512, 570, "big_ground")
-            .setScale(1)
-            .refreshBody();
-
-          // platforms.create(50, 140, 'ground');
-
-          //нижняя стена ////////////////////////////////////////////////////////////////////////////////////////////////
-          this.game.vueinst.platforms.create(150, 540, "ground");
-          this.game.vueinst.grass.create(150, 537, "grass");
-          this.game.vueinst.platforms.create(150, 520, "ground");
-          this.game.vueinst.grass.create(150, 517, "grass");
-          // rocks at first flour //////
-          this.game.vueinst.platforms.create(450, 540, "ground");
-          this.game.vueinst.grass.create(450, 537, "grass");
-
-          // первая ступенька // первая половина экрана /////////////////////////////////////////////////////////////////
-          this.game.vueinst.platforms.create(50, 430, "ground");
-          this.game.vueinst.grass.create(50, 427, "grass");
-          // second stairs
-          this.game.vueinst.platforms.create(250, 345, "ground");
-          this.game.vueinst.grass.create(250, 342, "grass");
-          // there are first flour
-          this.game.vueinst.platforms.create(370, 345, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(490, 345, "ground");
-          this.game.vueinst.grass.create(490, 342, "grass");
-          this.game.vueinst.platforms.create(610, 345, "ground");
-          this.game.vueinst.grass.create(610, 342, "grass");
-          this.game.vueinst.platforms.create(730, 345, "ground");
-          this.game.vueinst.grass.create(730, 342, "grass");
-          this.game.vueinst.platforms.create(760, 345, "ground");
-          this.game.vueinst.grass.create(760, 342, "grass");
-          this.game.vueinst.platforms.create(230, 315, "ground");
-          this.game.vueinst.grass.create(230, 342, "grass");
-          this.game.vueinst.platforms.create(210, 285, "ground");
-          this.game.vueinst.grass.create(210, 282, "grass");
-          // third stairs
-          this.game.vueinst.platforms.create(50, 270, "ground");
-          this.game.vueinst.grass.create(50, 267, "grass");
-          // fourth stairs
-          this.game.vueinst.platforms.create(250, 200, "ground");
-          this.game.vueinst.grass.create(250, 197, "grass");
-          // there are second flour
-          this.game.vueinst.platforms.create(370, 200, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(490, 200, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(610, 200, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(730, 200, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(760, 200, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(920, 160, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          this.game.vueinst.platforms.create(890, 190, "ground");
-          this.game.vueinst.grass.create(370, 342, "grass");
-          // mid per last flour
-          this.game.vueinst.platforms.create(10, 130, "ground");
-          this.game.vueinst.grass.create(10, 127, "grass");
-          this.game.vueinst.platforms.create(130, 130, "ground");
-          this.game.vueinst.grass.create(130, 127, "grass");
-          this.game.vueinst.platforms.create(250, 130, "ground");
-          this.game.vueinst.grass.create(250, 127, "grass");
-          this.game.vueinst.platforms.create(370, 130, "ground");
-          this.game.vueinst.grass.create(370, 127, "grass");
-          this.game.vueinst.platforms.create(490, 130, "ground");
-          this.game.vueinst.grass.create(490, 127, "grass");
-          this.game.vueinst.platforms.create(610, 130, "ground");
-          this.game.vueinst.grass.create(610, 127, "grass");
-          // platforms.create(730, 130, 'ground');
-          this.game.vueinst.platforms.create(730, 130, "ground");
-          this.game.vueinst.grass.create(730, 127, "grass");
-          //last stair
-          //  platforms.create(50, 140, 'ground');
-          //there are third big flour
-          this.game.vueinst.platforms.create(250, 60, "ground");
-          this.game.vueinst.grass.create(250, 57, "grass");
-          this.game.vueinst.platforms.create(370, 60, "ground");
-          this.game.vueinst.grass.create(370, 57, "grass");
-          this.game.vueinst.platforms.create(490, 60, "ground");
-          this.game.vueinst.grass.create(490, 57, "grass");
-          this.game.vueinst.platforms.create(610, 60, "ground");
-          this.game.vueinst.grass.create(610, 57, "grass");
-          this.game.vueinst.platforms.create(730, 60, "ground");
-          this.game.vueinst.grass.create(730, 57, "grass");
-          // platforms.create(730, 30, 'ground');
-          // second part of screen
-          this.game.vueinst.platforms.create(750, 520, "ground");
-          this.game.vueinst.grass.create(750, 517, "grass");
-          this.game.vueinst.platforms.create(960, 115, "ground");
-          this.game.vueinst.grass.create(960, 112, "grass");
-          this.game.vueinst.platforms.create(960, 265, "ground");
-          this.game.vueinst.grass.create(960, 262, "grass");
-          this.game.vueinst.platforms.create(960, 430, "ground");
-          this.game.vueinst.grass.create(960, 427, "grass");
-
-          // create the enemies /////////////////////////////////////////////////////////////////////////////////////////
-          this.game.vueinst.enemies = this.physics.add.group();
-
-          var enemy_1 = this.game.vueinst.enemies.create(100, 170, "enemy_1");
-
-          enemy_1.setCollideWorldBounds(true);
-          enemy_1.setBounce(1);
-          enemy_1.setVelocity(Phaser.Math.Between(-200, 200), 20);
-
-          //здесь мы прописываем движение игрока и анимацию этого движения ///////////////////////////////////////////////
-
-          this.game.vueinst.player = this.physics.add.sprite(10, 530, "dude");
-
-          this.game.vueinst.player.setBounce(0.2);
-          this.game.vueinst.player.setCollideWorldBounds(true);
-
-          this.game.vueinst.moveKeys = this.input.keyboard.addKeys({
-            left_A: Phaser.Input.Keyboard.KeyCodes.A,
-            right_D: Phaser.Input.Keyboard.KeyCodes.D
-          });
-
-          // тут будет вся анимация //////////////////////////////////////////////////////////////////////////////////////
-
-          this.anims.create({
-            key: "fly",
-            frames: [{ key: "keel", frame: 0 }],
-            frameRate: 20
-          });
-
-          this.anims.create({
-            key: "kek",
-            frames: this.anims.generateFrameNumbers("keel", {
-              start: 1,
-              end: 4
-            }),
-            frameRate: 20
-          });
-          this.anims.create({
-            key: "left",
-            frames: this.anims.generateFrameNumbers("dude", {
-              start: 0,
-              end: 3
-            }),
-            frameRate: 10,
-            repeat: -1
-          });
-
-          this.anims.create({
-            key: "turn",
-            frames: [{ key: "dude", frame: 4 }],
-            frameRate: 20
-          });
-
-          this.anims.create({
-            key: "right",
-            frames: this.anims.generateFrameNumbers("dude", {
-              start: 5,
-              end: 8
-            }),
-            frameRate: 10,
-            repeat: -1
-          });
-
-          this.game.vueinst.cursors = this.input.keyboard.createCursorKeys();
-
-          // добавляем звезды /////////////////////////////////////////////////////////////////////////////////////////////
-          this.game.vueinst.stars = this.physics.add.group({
-            key: "star",
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
-          });
-
-          this.game.vueinst.stars.children.iterate(function(child) {
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-          });
-
-          this.game.vueinst.scoreText = this.add.text(16, 16, "score: 0", {
-            fontSize: "32px",
-            fill: "#000"
-          });
-
           // устанавливаем протоколы столкновений ////////////////////////////////////////////////////////////////////////
 
-          this.physics.add.collider(
-            this.game.vueinst.player,
-            this.game.vueinst.platforms
-          );
-          this.physics.add.collider(
-            this.game.vueinst.stars,
-            this.game.vueinst.platforms
-          );
-          this.physics.add.collider(
-            this.game.vueinst.bombs,
-            this.game.vueinst.platforms
-          );
-
-          this.physics.add.collider(
-            this.game.vueinst.enemies,
-            this.game.vueinst.platforms,
-            this.game.vueinst.enemyshoot,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.player,
-            this.game.vueinst.en_bullets,
-            this.game.vueinst.hitBomb,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.en_bullets,
-            this.game.vueinst.platforms,
-            this.game.vueinst.en_boom,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.bullets,
-            this.game.vueinst.enemies,
-            this.game.vueinst.enemyKill,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.bullets,
-            this.game.vueinst.platforms,
-            this.game.vueinst.boom,
-            null,
-            this
-          );
-          this.physics.add.overlap(
-            this.game.vueinst.player,
-            this.game.vueinst.stars,
-            this.game.vueinst.collectStar,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.player,
-            this.game.vueinst.bombs,
-            this.game.vueinst.hitBomb,
-            null,
-            this
-          );
-          this.physics.add.collider(
-            this.game.vueinst.bullets,
-            this.game.vueinst.bombs,
-            this.game.vueinst.bombKill,
-            null,
-            this
-          );
+          this.game.vueinst.generationMap(this);
+          this.game.vueinst.createColaiders(this);
         },
         update: function() {
-          if (!this.game.vueinst.pl_login) {
-            this.add.image(512, 288, "fone");
+          if (!this.game.vueinst.user) {
+            if (!this.game.vueinst.isPasued) {
+              this.game.vueinst.isPasued = true;
+              this.physics.pause();
+              this.add.image(512, 288, "fone");
+            }
+          } else {
+            if (this.game.vueinst.isPasued) {
+              this.game.vueinst.isPasued = false;
+              this.physics.resume();
+            }
           }
 
           if (this.game.vueinst.moveKeys["left_A"].isDown) {
@@ -491,6 +519,7 @@ export default {
         }
       }
     });
+    this.game.vueinst = this;
   }
 };
 </script>
