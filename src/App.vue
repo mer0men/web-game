@@ -5,6 +5,13 @@
     <div v-show="user" class="logout">
       <input type="button" value="logut" @click="logout" />
     </div>
+    <div class="scoreboard">
+      <ul>
+        <li v-for="(item, index) in scoreboard" :key="index">
+          {{ item.name }}: {{ item.score }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -38,6 +45,12 @@ export default {
   computed: {
     user() {
       return this.$store.state.user;
+    },
+    database() {
+      return this.$store.state.database;
+    },
+    scoreboard() {
+      return this.$store.state.score;
     }
   },
   methods: {
@@ -125,6 +138,11 @@ export default {
 
       this.gameOver = true;
       console.log(bomb);
+
+      this.$store.dispatch("INSERT_SCOREBOARD", {
+        name: this.user.email.split("@")[0],
+        score: this.score
+      });
     },
     loadImgs(scene) {
       scene.load.image(
@@ -426,9 +444,15 @@ export default {
     // console.log("User", this.$root.user);
     // console.log(this.$root.firebaseui);
     // console.log(this.$root.firebase);
+    this.$store.dispatch("CONNECT_DATABASE", undefined);
+
     this.$root.firebase.auth().onAuthStateChanged(user => {
       this.$store.commit("SET_USER", user);
     });
+
+    // Получение таблицы рекордов
+    this.$store.dispatch("GET_SCOREBOARD", undefined);
+
     let ui = new this.$root.firebaseui.auth.AuthUI(this.$root.firebase.auth());
     let uiConfig = {
       callbacks: {
@@ -461,7 +485,6 @@ export default {
           this.game.vueinst.loadImgs(this);
         },
         create: function() {
-
           this.input.keyboard.on("keyup-W", () => console.log("W pressed"));
           this.input.keyboard.on("keydown-W", this.game.vueinst.fire, this);
 
@@ -469,17 +492,24 @@ export default {
 
           this.game.vueinst.generationMap(this);
           this.game.vueinst.createColaiders(this);
-          var button = this.add.image(900, 16, 'fullscreen', 0).setOrigin(1, 0).setInteractive();
+          var button = this.add
+            .image(900, 16, "fullscreen", 0)
+            .setOrigin(1, 0)
+            .setInteractive();
 
-          button.on('pointerup', function () {
-            if (this.scale.isFullscreen) {
-              button.setFrame(0);
-              this.scale.stopFullscreen();
-            } else {
-              button.setFrame(1);
-              this.scale.startFullscreen();
-            }
-          }, this);
+          button.on(
+            "pointerup",
+            function() {
+              if (this.scale.isFullscreen) {
+                button.setFrame(0);
+                this.scale.stopFullscreen();
+              } else {
+                button.setFrame(1);
+                this.scale.startFullscreen();
+              }
+            },
+            this
+          );
         },
         update: function() {
           if (!this.game.vueinst.user) {
