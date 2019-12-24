@@ -163,7 +163,6 @@ export default {
           frameHeight: 48
         }
       );
-      //   scene.game.load.spritesheet('keel', 'assets/boom_frame.png', {frameWidth: 16, frameHeight: 16 });
       scene.load.image(
         "grass",
         "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/platform_grass_img.png"
@@ -171,6 +170,10 @@ export default {
       scene.load.image(
         "fone",
         "https://raw.githubusercontent.com/kazakovichna/web-game/master/MAZASHiB%20LOGO.png"
+      );
+      scene.load.image(
+        "fullscreen",
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/fullscreen_bt.png"
       );
     },
     generationMap(scene) {
@@ -304,21 +307,6 @@ export default {
       });
 
       // тут будет вся анимация //////////////////////////////////////////////////////////////////////////////////////
-
-      scene.anims.create({
-        key: "fly",
-        frames: [{ key: "keel", frame: 0 }],
-        frameRate: 20
-      });
-
-      scene.anims.create({
-        key: "kek",
-        frames: scene.anims.generateFrameNumbers("keel", {
-          start: 1,
-          end: 4
-        }),
-        frameRate: 20
-      });
       scene.anims.create({
         key: "left",
         frames: scene.anims.generateFrameNumbers("dude", {
@@ -376,7 +364,6 @@ export default {
         scene.game.vueinst.bombs,
         scene.game.vueinst.platforms
       );
-
       scene.physics.add.collider(
         scene.game.vueinst.enemies,
         scene.game.vueinst.platforms,
@@ -474,6 +461,7 @@ export default {
           this.game.vueinst.loadImgs(this);
         },
         create: function() {
+
           this.input.keyboard.on("keyup-W", () => console.log("W pressed"));
           this.input.keyboard.on("keydown-W", this.game.vueinst.fire, this);
 
@@ -481,6 +469,17 @@ export default {
 
           this.game.vueinst.generationMap(this);
           this.game.vueinst.createColaiders(this);
+          var button = this.add.image(900, 16, 'fullscreen', 0).setOrigin(1, 0).setInteractive();
+
+          button.on('pointerup', function () {
+            if (this.scale.isFullscreen) {
+              button.setFrame(0);
+              this.scale.stopFullscreen();
+            } else {
+              button.setFrame(1);
+              this.scale.startFullscreen();
+            }
+          }, this);
         },
         update: function() {
           if (!this.game.vueinst.user) {
