@@ -8,10 +8,6 @@ export default new Vuex.Store({
   state: {
     user: {},
     score: [],
-    // {
-    //   email: undefined,
-    //   score: 0
-    // }
     database: undefined
   },
   mutations: {

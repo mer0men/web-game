@@ -3,9 +3,10 @@
     <canvas id="game"></canvas>
     <div v-show="!user" id="firebaseui-auth-container"></div>
     <div v-show="user" class="logout">
-      <input type="button" value="logut" @click="logout" />
+      <img src="https://raw.githubusercontent.com/kazakovichna/web-game/master/logout.png"
+           @click="logout" width="100" height="100" style="cursor: pointer" title="logut">
     </div>
-    <div class="scoreboard">
+    <div class="scoreboard" style="background-image: ">
       <ul>
         <li v-for="(item, index) in scoreboard" :key="index">
           {{ item.name }}: {{ item.score }}
@@ -143,6 +144,101 @@ export default {
         name: this.user.email.split("@")[0],
         score: this.score
       });
+      this.scene.add.image(512, 288, "fone");
+      setTimeout(() => alert("вас загрызли КВНшики"));
+      this.game.destroy();
+      this.initGame();
+    },
+    initGame(){
+
+      this.score = 0;
+      this.game = new Phaser.Game({
+        type: Phaser.WEBGL,
+        width: 1024,
+        height: 576,
+        canvas: document.getElementById("game"),
+        physics: {
+          default: "arcade",
+          arcade: {
+            gravity: { y: 600 },
+            debug: false
+          }
+        },
+        scale: {
+          width: 1024,
+          height: 576,
+          mode: Phaser.Scale.FIT
+        },
+        scene: {
+          preload: function() {
+            this.game.vueinst.scene = this;
+            this.game.vueinst.loadImgs(this);
+          },
+          create: function() {
+            this.input.keyboard.on("keydown-SPACE", this.game.vueinst.fire, this);
+
+            // устанавливаем протоколы столкновений ////////////////////////////////////////////////////////////////////////
+
+            this.game.vueinst.generationMap(this);
+            this.game.vueinst.createColaiders(this);
+            var button = this.add
+              .image(980, 16, "fullscreen", 0)
+              .setOrigin(1, 0)
+              .setInteractive();
+
+            button.on(
+              "pointerup",
+              function() {
+                if (this.scale.isFullscreen) {
+                  button.setFrame(0);
+                  this.scale.stopFullscreen();
+                } else {
+                  button.setFrame(1);
+                  this.scale.startFullscreen();
+                }
+              },
+              this
+            );
+          },
+          update: function() {
+            if (!this.game.vueinst.user) {
+              if (!this.game.vueinst.isPasued) {
+                this.game.vueinst.isPasued = true;
+                this.physics.pause();
+                this.add.image(512, 288, "fone");
+              }
+            } else {
+              if (this.game.vueinst.isPasued) {
+                this.game.vueinst.isPasued = false;
+                this.physics.resume();
+              }
+            }
+
+            if (this.game.vueinst.moveKeys["left_A"].isDown) {
+              this.game.vueinst.player.setVelocityX(-160);
+              this.game.vueinst.flip = true;
+              this.game.vueinst.player.anims.play("left", true);
+            } else if (this.game.vueinst.moveKeys["right_D"].isDown) {
+              this.game.vueinst.player.setVelocityX(160);
+              this.game.vueinst.flip = false;
+              this.game.vueinst.player.anims.play("right", true);
+            } else {
+              this.game.vueinst.player.setVelocityX(0);
+
+              this.game.vueinst.player.anims.play("turn");
+            }
+
+            if (
+              this.game.vueinst.moveKeys["up_W"].isDown &&
+              this.game.vueinst.player.body.touching.down
+            ) {
+              this.game.vueinst.player.setVelocityY(-330);
+            }
+          }
+        }
+      });
+      this.game.vueinst = this;
+
     },
     loadImgs(scene) {
       scene.load.image(
@@ -321,7 +417,8 @@ export default {
 
       scene.game.vueinst.moveKeys = scene.input.keyboard.addKeys({
         left_A: Phaser.Input.Keyboard.KeyCodes.A,
-        right_D: Phaser.Input.Keyboard.KeyCodes.D
+        right_D: Phaser.Input.Keyboard.KeyCodes.D,
+        up_W: Phaser.Input.Keyboard.KeyCodes.W
       });
 
       // тут будет вся анимация //////////////////////////////////////////////////////////////////////////////////////
@@ -466,90 +563,9 @@ export default {
       signInOptions: [this.$root.firebase.auth.GoogleAuthProvider.PROVIDER_ID]
     };
     ui.start("#firebaseui-auth-container", uiConfig);
+    this.initGame();
 
-    this.game = new Phaser.Game({
-      type: Phaser.WEBGL,
-      width: 1024,
-      height: 576,
-      canvas: document.getElementById("game"),
-      physics: {
-        default: "arcade",
-        arcade: {
-          gravity: { y: 600 },
-          debug: false
-        }
-      },
-      scene: {
-        preload: function() {
-          this.game.vueinst.scene = this;
-          this.game.vueinst.loadImgs(this);
-        },
-        create: function() {
-          this.input.keyboard.on("keyup-W", () => console.log("W pressed"));
-          this.input.keyboard.on("keydown-W", this.game.vueinst.fire, this);
-
-          // устанавливаем протоколы столкновений ////////////////////////////////////////////////////////////////////////
-
-          this.game.vueinst.generationMap(this);
-          this.game.vueinst.createColaiders(this);
-          var button = this.add
-            .image(900, 16, "fullscreen", 0)
-            .setOrigin(1, 0)
-            .setInteractive();
-
-          button.on(
-            "pointerup",
-            function() {
-              if (this.scale.isFullscreen) {
-                button.setFrame(0);
-                this.scale.stopFullscreen();
-              } else {
-                button.setFrame(1);
-                this.scale.startFullscreen();
-              }
-            },
-            this
-          );
-        },
-        update: function() {
-          if (!this.game.vueinst.user) {
-            if (!this.game.vueinst.isPasued) {
-              this.game.vueinst.isPasued = true;
-              this.physics.pause();
-              this.add.image(512, 288, "fone");
-            }
-          } else {
-            if (this.game.vueinst.isPasued) {
-              this.game.vueinst.isPasued = false;
-              this.physics.resume();
-            }
-          }
-
-          if (this.game.vueinst.moveKeys["left_A"].isDown) {
-            this.game.vueinst.player.setVelocityX(-160);
-            this.game.vueinst.flip = true;
-            this.game.vueinst.player.anims.play("left", true);
-          } else if (this.game.vueinst.moveKeys["right_D"].isDown) {
-            this.game.vueinst.player.setVelocityX(160);
-            this.game.vueinst.flip = false;
-            this.game.vueinst.player.anims.play("right", true);
-          } else {
-            this.game.vueinst.player.setVelocityX(0);
-
-            this.game.vueinst.player.anims.play("turn");
-          }
-
-          if (
-            this.game.vueinst.cursors.space.isDown &&
-            this.game.vueinst.player.body.touching.down
-          ) {
-            this.game.vueinst.player.setVelocityY(-330);
-          }
-        }
-      }
-    });
-    this.game.vueinst = this;
-  }
+    }
 };
 </script>
 
