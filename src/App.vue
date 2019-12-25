@@ -3,10 +3,16 @@
     <canvas id="game"></canvas>
     <div v-show="!user" id="firebaseui-auth-container"></div>
     <div v-show="user" class="logout">
-      <img src="https://raw.githubusercontent.com/kazakovichna/web-game/master/logout.png"
-           @click="logout" width="100" height="100" style="cursor: pointer" title="logut">
+      <img
+        src="https://raw.githubusercontent.com/kazakovichna/web-game/master/logout.png"
+        @click="logout"
+        width="100"
+        height="100"
+        style="cursor: pointer"
+        title="logut"
+      />
     </div>
-    <div class="scoreboard" style="background-image: ">
+    <div>
       <ul>
         <li v-for="(item, index) in scoreboard" :key="index">
           {{ item.name }}: {{ item.score }}
@@ -15,7 +21,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import Phaser from "phaser";
 // import firebase from "firebase";
@@ -60,11 +65,10 @@ export default {
     },
     bombKill(bullets, bombs) {
       bombs.disableBody(true, true);
-      console.log(bullets);
     },
+    // eslint-disable-next-line no-unused-vars
     boom(bullet, platform) {
       bullet.disableBody(true, true);
-      console.log(platform);
     },
     collectStar(player, star) {
       star.disableBody(true, true);
@@ -93,12 +97,12 @@ export default {
     },
     enemyKill(bullet, enemy) {
       enemy.disableBody(true, true);
-      console.log(bullet);
     },
+    // eslint-disable-next-line no-unused-vars
     en_boom(en_bullet, platform) {
       en_bullet.disableBody(true, true);
-      console.log(platform);
     },
+    // eslint-disable-next-line no-unused-vars
     enemyshoot(enemy, platforms) {
       let en_bullet = this.en_bullets.create(enemy.x - 5, enemy.y, "fireball");
       en_bullet.setVelocityX(-500);
@@ -107,7 +111,6 @@ export default {
       en_bullet = this.en_bullets.create(enemy.x + 5, enemy.y, "fireball");
       en_bullet.setVelocityX(500);
       en_bullet.setVelocityY(-300);
-      console.log(platforms);
     },
     fire() {
       let bullet;
@@ -130,6 +133,7 @@ export default {
         bullet.setVelocityY(-100);
       }
     },
+    // eslint-disable-next-line no-unused-vars
     hitBomb(player, bomb) {
       this.scene.physics.pause();
 
@@ -138,7 +142,6 @@ export default {
       player.anims.play("turn");
 
       this.gameOver = true;
-      console.log(bomb);
 
       this.$store.dispatch("INSERT_SCOREBOARD", {
         name: this.user.email.split("@")[0],
@@ -149,8 +152,7 @@ export default {
       this.game.destroy();
       this.initGame();
     },
-    initGame(){
-
+    initGame() {
       this.score = 0;
       this.game = new Phaser.Game({
         type: Phaser.WEBGL,
@@ -175,7 +177,11 @@ export default {
             this.game.vueinst.loadImgs(this);
           },
           create: function() {
-            this.input.keyboard.on("keydown-SPACE", this.game.vueinst.fire, this);
+            this.input.keyboard.on(
+              "keydown-SPACE",
+              this.game.vueinst.fire,
+              this
+            );
 
             // устанавливаем протоколы столкновений ////////////////////////////////////////////////////////////////////////
 
@@ -238,12 +244,11 @@ export default {
         }
       });
       this.game.vueinst = this;
-
     },
     loadImgs(scene) {
       scene.load.image(
         "background",
-        "https://raw.githubusercontent.com/kazakovichna/web-game/master/assets/wasteland.png"
+        "https://raw.githubusercontent.com/kazakovichna/web-game/master/background2.png"
       );
       scene.load.image(
         "big_ground",
@@ -538,9 +543,6 @@ export default {
     }
   },
   mounted() {
-    // console.log("User", this.$root.user);
-    // console.log(this.$root.firebaseui);
-    // console.log(this.$root.firebase);
     this.$store.dispatch("CONNECT_DATABASE", undefined);
 
     this.$root.firebase.auth().onAuthStateChanged(user => {
@@ -553,9 +555,9 @@ export default {
     let ui = new this.$root.firebaseui.auth.AuthUI(this.$root.firebase.auth());
     let uiConfig = {
       callbacks: {
+        // eslint-disable-next-line no-unused-vars
         signInSuccessWithAuthResult: (authResult, redirectUrl) => {
           this.userId = authResult.user;
-          console.log(authResult, redirectUrl);
           return true;
         }
       },
@@ -564,8 +566,7 @@ export default {
     };
     ui.start("#firebaseui-auth-container", uiConfig);
     this.initGame();
-
-    }
+  }
 };
 </script>
 
@@ -581,10 +582,5 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#game {
-  height: 576px;
-  width: 1024px;
 }
 </style>
